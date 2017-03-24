@@ -1,0 +1,5 @@
+C:\Users\Lorenzo\Documents\GitHub\Google-Translator\Marjani.Net.Utility\bin\Debug\Marjani.Net.Utility.dll
+C:\Users\Lorenzo\Documents\GitHub\Google-Translator\Marjani.Net.Utility\bin\Debug\Marjani.Net.Utility.pdb
+C:\Users\Lorenzo\Documents\GitHub\Google-Translator\Marjani.Net.Utility\obj\Debug\Marjani.Net.Utility.csprojResolveAssemblyReference.cache
+C:\Users\Lorenzo\Documents\GitHub\Google-Translator\Marjani.Net.Utility\obj\Debug\Marjani.Net.Utility.dll
+C:\Users\Lorenzo\Documents\GitHub\Google-Translator\Marjani.Net.Utility\obj\Debug\Marjani.Net.Utility.pdb
