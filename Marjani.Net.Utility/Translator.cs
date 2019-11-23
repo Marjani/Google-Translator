@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace Marjani.Net.Utility
@@ -27,8 +25,8 @@ namespace Marjani.Net.Utility
         /// </summary>
         public Translator()
         {
-            this.SourceLanguage = "English";
-            this.TargetLanguage = "Persian";
+            SourceLanguage = "English";
+            TargetLanguage = "Persian";
         }
 
         #endregion
@@ -40,6 +38,12 @@ namespace Marjani.Net.Utility
         /// </summary>
         /// <value>The source "</value>
         public string SourceLanguage
+        {
+            get;
+            set;
+        }
+
+        public string GoogleApiKey
         {
             get;
             set;
@@ -107,33 +111,37 @@ namespace Marjani.Net.Utility
         public void Translate()
         {
             // Validate source and target languages
-            if (string.IsNullOrEmpty(this.SourceLanguage) ||
-                string.IsNullOrEmpty(this.TargetLanguage) ||
-                this.SourceLanguage.Trim().Equals(this.TargetLanguage.Trim()))
+            if (string.IsNullOrEmpty(SourceLanguage) ||
+                string.IsNullOrEmpty(TargetLanguage) ||
+                SourceLanguage.Trim().Equals(TargetLanguage.Trim()))
             {
                 throw new Exception("An invalid source or target language was specified.");
             }
 
             // Delegate to base class
-            this.fetchResource();
+            FetchResource();
         }
 
-        private void fetchResource()
+        private void FetchResource()
         {
-            var url = getFetchUrl() + getPostData();
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-
-            System.Net.WebResponse resp = request.GetResponse();
-            using (System.IO.Stream stream = resp.GetResponseStream())
+            try
             {
-                using (System.IO.StreamReader sr = new System.IO.StreamReader(stream))
+                var url = getFetchUrl() + getPostData();
+
+                var request = (HttpWebRequest) WebRequest.Create(url);
+
+                var resp = request.GetResponse();
+                using (var stream = resp.GetResponseStream())
                 {
-                     this.Content = sr.ReadToEnd();
-                    sr.Close();
+                    using (var sr = new StreamReader(stream))
+                    {
+                        Content = sr.ReadToEnd();
+                        sr.Close();
+                    }
                 }
+                parseContent();
             }
-            parseContent();
+            catch{}
         }
 
         #endregion
@@ -146,7 +154,7 @@ namespace Marjani.Net.Utility
         /// <returns>The url to be fetched.</returns>
         protected string getFetchUrl()
         {
-            return "https://translate.google.com/translate_a/single";
+            return "https://translation.googleapis.com/language/translate/v2";
         }
 
         /// <summary>
@@ -157,12 +165,13 @@ namespace Marjani.Net.Utility
         protected string getPostData()
         {
             // Set translation mode
-            string strPostData = string.Format("?client=t&sl={0}&tl={1}&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&trs=1&inputm=1&ssel=6&tsel=3&tk=519321|960993",
-                                                 Translator.LanguageEnumToIdentifier(this.SourceLanguage),
-                                                 Translator.LanguageEnumToIdentifier(this.TargetLanguage));
+            string strPostData = string.Format("?key={0}&source={1}&target={2}",
+                     GoogleApiKey ,                           
+                            LanguageEnumToIdentifier(SourceLanguage),
+                                                 LanguageEnumToIdentifier(TargetLanguage));
 
             // Set text to be translated
-            strPostData += "&q=" + HttpUtility.UrlEncode(this.SourceText);
+            strPostData += "&q=" + HttpUtility.UrlEncode(SourceText);
             return strPostData;
         }
 
@@ -193,8 +202,8 @@ namespace Marjani.Net.Utility
             (string language)
         {
             string mode = string.Empty;
-            Translator.EnsureInitialized();
-            Translator._languageModeMap.TryGetValue(language, out mode);
+            EnsureInitialized();
+            _languageModeMap.TryGetValue(language, out mode);
             return mode;
         }
 
@@ -203,7 +212,7 @@ namespace Marjani.Net.Utility
         /// </summary>
         private static void EnsureInitialized()
         {
-            if (Translator._languageModeMap == null)
+            if (_languageModeMap == null)
             {
                 Translator._languageModeMap = new Dictionary<string, string>();
                 Translator._languageModeMap.Add("Afrikaans", "af");
