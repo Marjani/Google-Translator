@@ -26,7 +26,7 @@ namespace Marjani.Net.Utility
         public Translator()
         {
             SourceLanguage = "English";
-            TargetLanguage = "Italian";
+            TargetLanguage = "Persian";
         }
 
         #endregion
